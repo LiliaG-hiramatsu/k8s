@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pagina-web
+  namespace: static-website
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pagina-web
+  template:
+    metadata:
+      labels:
+        app: pagina-web
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: contenido-web
+          mountPath: /usr/share/nginx/html
+          readOnly: true
+      volumes:
+      - name: contenido-web
+        persistentVolumeClaim:
+          claimName: pagina-pvc
