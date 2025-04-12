@@ -17,6 +17,11 @@ El proyecto está organizado de la siguiente manera:
     - `services/`
       - `pagina-service.yaml`: Define el servicio que expone el sitio web mediante un `NodePort`.
     - `README.md`: Documentación del proyecto.
+  - `static-website/`: Contiene todos los archivos de la página web estática.
+    - `assets/`
+    - `index.html`
+    - `style.css`
+  - `Documentación-GARCIA-HIRAMATSU.pdf`
 
 ## ⚙️ Requisitos
 
