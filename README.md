@@ -71,11 +71,11 @@ Aquí verificar que el pvc y el pv estén en estado "bound" con el comando:
 Dentro del directorio k8s creé los directorios "deployments" y "services", en los cuales, dentro de cada uno, creé los manifiestos correspondientes, llamados pagina-deployment.yaml y pagina-service.yaml respectivamente.
 El servicio se llama pagina-web-service.
 
-### Desplegar el contenedor NGINX
+#### Desplegar el contenedor NGINX
 
 💻 kubectl apply -f k8s/deployments/pagina-deployment.yaml
 
-### Exponer el servicio por NodePort
+#### Exponer el servicio por NodePort
 
 💻 kubectl apply -f k8s/services/pagina-service.yaml
 
@@ -103,7 +103,15 @@ http://localhost:30080
 
 Para eliminar los recursos creados:
 
-💻 kubctl delete -f k8s/ --recursive
+💻 kubectl delete deployment pagina-web -n static-website
+
+💻 kubectl delete service pagina-web-service -n static-website
+
+💻 kubectl delete pvc pagina-pvc -n static-website
+
+💻 kubectl delete pv pagina-pv
+
+💻 minikube stop
 
 ## 💬 Notas
 
