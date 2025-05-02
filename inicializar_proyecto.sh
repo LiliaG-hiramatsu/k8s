@@ -76,7 +76,7 @@ spec:
       containers:
         - name: nginx
           image: pagina-web-nginx
-		  imagePullPolicy: Never
+          imagePullPolicy: Never
           ports:
             - containerPort: 80
 EOF
