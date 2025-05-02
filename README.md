@@ -1,6 +1,6 @@
 # Sitio Web Estático con Kubernetes
 
-Este proyecto despliega un sitio web estático utilizando un contenedor NGINX en un clúster de Kubernetes. Todos los pasos se automatizan mediante scripts Bash.
+El proyecto automatiza el despliegue de un sitio web estático usando una imagen Docker personalizada con NGINX en Kubernetes, sin necesidad de volúmenes ni montajes externos.
 
 ---
 
@@ -32,7 +32,7 @@ Automatiza la preparación completa del entorno:
 
 - Hace fork del repositorio web estático `ewojjowe/static-website`
 - Lo clona localmente en `proyecto-cloud/static-website/`
-- Crea la estructura de carpetas `k8s/{namespaces,volumes,deployments,services}`
+- Crea la estructura de carpetas `k8s/namespaces` `k8s/deployments` `k8s/services`
 - Genera los manifiestos YAML preconfigurados
 - Crea y sube el repositorio `k8s` a mi cuenta de GitHub (o la que se especifique en la variable USUARIO_GITHUB)
 
@@ -50,8 +50,8 @@ chmod +x inicializar_proyecto.sh
 Realiza el despliegue en Kubernetes usando los manifiestos creados:
 
 * Inicia Minikube
-* Solicita montar el contenido estático como volumen
-* Aplica namespace, volumen, deployment y service
+* Contruye la imagen de Docker
+* Aplica namespace, deployment y service
 * Verifica el estado del pod
 * Abre el sitio web en el navegador
 
@@ -68,7 +68,7 @@ chmod +x desplegar.sh
 
 Limpia todos los recursos creados:
 
-* Elimina el Deployment, Service, PVC, PV y Namespace
+* Elimina el Deployment, Service y Namespace
 * Detiene Minikube
 
 📌 **Ejecutar cuando desees eliminar el entorno:**

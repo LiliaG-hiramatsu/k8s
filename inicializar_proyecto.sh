@@ -7,8 +7,8 @@
 #	- Crea la estructura de manifiestos Kubernetes
 #	- Crea y sube el repositorio `k8s` a github
 
-set -euo pipefail
-IFS=$'\n\t'
+set -euo pipefail # Fail fast
+IFS=$'\n\t' # Separador seguro
 
 # ---- CONFIGURACION ----
 
@@ -33,7 +33,7 @@ validar_dependencias() {
 
 hacer_fork_y_clonar() {
 	echo "Haciendo fork del repositorio web..."
-	gh repo fork "$URL_ORIGINAL_WEB" --clone --remote --org "$USUARIO_GITHUB" || true
+	gh repo fork "$URL_ORIGINAL_WEB" --clone --remote || true
 
 	echo "Moviendo repositorio al directorio del proyecto..."
 	mkdir -p "$DIR_BASE"
@@ -42,7 +42,9 @@ hacer_fork_y_clonar() {
 
 crear_directorios_k8s() {
 	echo "Creando estructura de manifiestos..."
-	mkdir -p "$DIR_K8S"/{namespaces, volumes, deployments, services}
+	mkdir -p "$DIR_K8S/namespaces"
+	mkdir -p "$DIR_K8S/deployments"
+	mkdir -p "$DIR_K8S/services"
 }
 
 generar_manifiestos() {
@@ -55,64 +57,27 @@ metadata:
 	name: static-website
 EOF
 
-	cat <<EOF > "$DIR_K8S/volumes/pagina-volumen_persistente.yaml
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-	name: pagina-pv
-spec:
-	capacity:
-		storage: 1Gi
-	accessModes:
-		- ReadWriteOnce
-	persistentVolumeReclaimPolicy: Retain
-	hostPath:
-		path: /proyecto-cloud/static-website
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-	name: pagina-pvc
-	namespace: static-website
-spec:
-	accessModes:
-		- ReadWriteOnce
-	volumeName: pagina-pv
-	storageClassName: ""
-	resources:
-		requests:
-			storage: 1Gi
-EOF
-
 	cat <<EOF > "$DIR_K8S/deployments/pagina-deployment.yaml"
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-	name: pagina-web
-	namespace: static-website
+  name: pagina-web
+  namespace: static-website
 spec:
-	replicas: 1
-	selector:
-		matchLabels:
-			app: pagina-web
-	template:
-		metadata:
-			labels:
-				app: pagina-web
-		spec:
-			containers:
-			- name: nginx
-			  image: nginx:alpine
-			  ports:
-			  - containerPort: 80
-			  volumeMounts:
-			  - name: contenido-web
-			  mountPath: /esr/share/nginx/html
-			  readOnly: true
-			volumes:
-			- name: contenido-web
-			  persistentVolumeClaim:
-				claimName: pagina-pvc
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pagina-web
+  template:
+    metadata:
+      labels:
+        app: pagina-web
+    spec:
+      containers:
+      - name: nginx
+        image: pagina-web-nginx
+        ports:
+        - containerPort: 80
 EOF
 
 	cat <<EOF > "$DIR_K8S/services/pagina-service.yaml"

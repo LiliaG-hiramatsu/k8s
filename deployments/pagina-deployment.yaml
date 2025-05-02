@@ -15,14 +15,6 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: nginx:alpine
+        image: pagina-web-nginx
         ports:
         - containerPort: 80
-        volumeMounts:
-        - name: contenido-web
-          mountPath: /usr/share/nginx/html
-          readOnly: true
-      volumes:
-      - name: contenido-web
-        persistentVolumeClaim:
-          claimName: pagina-pvc

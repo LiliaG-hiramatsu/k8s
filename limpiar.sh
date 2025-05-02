@@ -3,8 +3,7 @@
 # Script: limpiar.sh
 
 # Descripcion: Elimina los recursos de Kubernetes creados por el despliegue
-# del sitio web estatico, incluyendo namespace, PV, PVC, deployment 
-# y service. Tambien detiene minikube.
+# del sitio web estatico. Tambien detiene minikube.
 
 # Uso: ./limpiar.sh [--ayuda]
 
@@ -25,8 +24,6 @@ K8S_DIR="$PROYECTO_DIR/k8s"
 NAMESPACE="static-website"
 DEPLOYMENT="pagina-web"
 SERVICE="pagina-web-service"
-PVC="pagina-pvc"
-PV="pagina-pv"
 
 # ---- FUNCIONES ----
 
@@ -58,12 +55,6 @@ eliminar_recursos_k8s() {
 
 	echo "Eliminando service..."
 	kubectl delete service "$SERVICE" -n "$NAMESPACE" --ignore-not-found
-
-	echo "Eliminando PVC..."
-	kubectl delete pvc "$PVC" -n "$NAMESPACE" --ignore-not-found
-
-	echo "Eliminando PV..."
-	kubectl delete pv "$PV" --ignore-not-found
 
 	echo "Eliminando namespace..."
 	kubectl delete namespace "$NAMESPACE" --ignore-not-found
