@@ -83,10 +83,18 @@ EOF
 }
 
 construir_imagen() {
+    echo "Usando el Docker interno de Minikube..."
+    eval $(minikube docker-env)
+
     echo "Construyendo imagen Docker personalizada..."
     docker build -t pagina-web-nginx "$STATIC_DIR"
-    echo "Imagen construida: pagina-web-nginx"
+
+    echo "Restaurando entorno de Docker original..."
+    eval $(minikube docker-env -u)
+
+    echo "Imagen construida dentro de Minikube: pagina-web-nginx"
 }
+
 
 crear_recursos_k8s() {
     echo "Desplegando recursos en Kubernetes..."

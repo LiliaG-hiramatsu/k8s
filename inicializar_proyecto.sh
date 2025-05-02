@@ -54,7 +54,7 @@ generar_manifiestos() {
 apiVersion: v1
 kind: Namespace
 metadata:
-	name: static-website
+  name: static-website
 EOF
 
 	cat <<EOF > "$DIR_K8S/deployments/pagina-deployment.yaml"
@@ -74,26 +74,27 @@ spec:
         app: pagina-web
     spec:
       containers:
-      - name: nginx
-        image: pagina-web-nginx
-        ports:
-        - containerPort: 80
+        - name: nginx
+          image: pagina-web-nginx
+		  imagePullPolicy: Never
+          ports:
+            - containerPort: 80
 EOF
 
 	cat <<EOF > "$DIR_K8S/services/pagina-service.yaml"
 apiVersion: v1
 kind: Service
 metadata:
-	name: pagina-web-service
-	namespace: static-website
+  name: pagina-web-service
+  namespace: static-website
 spec:
-	type: NodePort
-	selector:
-		app: pagina-web
-	ports:
-		- port: 80
-		  targetPort: 80
-		  nodePort: 30080
+  type: NodePort
+  selector:
+    app: pagina-web
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30080
 EOF
 }
 
