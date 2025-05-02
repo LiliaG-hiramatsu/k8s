@@ -68,6 +68,20 @@ iniciar_minikube() {
     fi
 }
 
+crear_dockerfile() {
+    local dockerfile_path="$STATIC_DIR/Dockerfile"
+
+    if [[ -f "$dockerfile_path" ]]; then
+        echo "Dockerfile ya existe en $dockerfile_path"
+    else
+        echo "Creando Dockerfile en $dockerfile_path..."
+        cat <<EOF > "$dockerfile_path"
+FROM nginx:alpine
+COPY . /usr/share/nginx/html
+EOF
+    fi
+}
+
 construir_imagen() {
     echo "Construyendo imagen Docker personalizada..."
     docker build -t pagina-web-nginx "$STATIC_DIR"
@@ -118,6 +132,7 @@ fi
 
 validar_dependencias
 iniciar_minikube
+crear_dockerfile
 construir_imagen
 crear_recursos_k8s
 verificar_pod
