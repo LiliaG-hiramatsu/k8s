@@ -1,130 +1,88 @@
-# Sitio web estático con Kubernetes
+# Sitio Web Estático con Kubernetes
 
-Este proyecto despliega un sitio web estático utilizando un contenedor NGINX en un clúster de Kubernetes. Los archivos HTML se montan desde un volumen persistente  (`PersistentVolume`) para asegurar la persistencia del contenido.
+Este proyecto despliega un sitio web estático utilizando un contenedor NGINX en un clúster de Kubernetes. Todos los pasos se automatizan mediante scripts Bash.
 
-## 🧱 Estructura del Proyecto
+---
 
-El proyecto está organizado de la siguiente manera:
+## 📁 Estructura
 
-- `proyecto-cloud/`
-  - `k8s/`: Contiene todos los manifiestos de Kubernetes organizados en subdirectorios.
-    - `namespaces/`
-      - `pagina-namespace.yaml`: Define el namespace `static-website`.
-    - `volumes/`
-      - `pagina-volumen_persistente.yaml`: Define el PersistentVolume y el PersistentVolumeClaim.
-    - `deployments/`
-      - `pagina-deployment.yaml`: Define el Deployment del pod que ejecuta el sitio web.
-    - `services/`
-      - `pagina-service.yaml`: Define el servicio que expone el sitio web mediante un `NodePort`.
-    - `README.md`: Documentación del proyecto.
-  - `static-website/`: Contiene todos los archivos de la página web estática.
-    - `assets/`
-    - `index.html`
-    - `style.css`
-  - `Documentación-GARCIA-HIRAMATSU.pdf`
 
-## ⚙️ Requisitos
+- proyecto-cloud/
+    - static-website/
+    - k8s/
 
-- Kubernetes (probado en Docker Desktop y Minikube)
-- `kubectl` instalado y configurado
-- Carpeta local con contenido web: `/proyecto-cloud/static-website`
+📦 Este proyecto crea automáticamente los directorios `proyecto-cloud/`, `static-website/` y `k8s/` al ejecutar el script `inicializar_proyecto.sh`.
 
-## 🚀 Despliegue
+---
 
-1. **Iniciar minikube**
+## 🧰 Requisitos
 
-💻 minikube start
+* Ubuntu, WSL o entorno Linux
+* `minikube` y `kubectl` instalados y configurados
+* `gh` (GitHub CLI) autenticado (`gh auth login`)
+* Git configurado
 
-2. **Crear el Namespace**
+---
 
-En el directorio namespaces creé el manifiesto para crear el namespace. El archivo se llama "pagina-namespace.yaml" y el namespace se llama "static-website".
+## 🚀 Scripts disponibles
 
-💻 kubectl apply -f k8s/namespaces/pagina-namespace.yaml
+### 1. `inicializar_proyecto.sh`
 
-Para comprobar que se creó correctamente:
+Automatiza la preparación completa del entorno:
 
-💻 kubectl get namespaces
+- Hace fork del repositorio web estático `ewojjowe/static-website`
+- Lo clona localmente en `proyecto-cloud/static-website/`
+- Crea la estructura de carpetas `k8s/{namespaces,volumes,deployments,services}`
+- Genera los manifiestos YAML preconfigurados
+- Crea y sube el repositorio `k8s` a mi cuenta de GitHub (o la que se especifique en la variable USUARIO_GITHUB)
 
-3. **Crear el manifiesto del volumen persistente y la claim**
+📌 **Ejecutar una sola vez al inicio:**
 
-En el directorio volumes creé el manifiesto para el volumen persistente y la claim, el archivo se llama pagina-volumen_persistente.yaml
+```bash
+chmod +x inicializar_proyecto.sh
+./inicializar_proyecto.sh
+````
 
-Antes de aplicar el manifiesto, montar el directorio local con minikube:
+---
 
-Para Windows desde el cmd:
+### 2. `desplegar.sh`
 
-💻 minikube mount C:\proyecto-cloud\static-website:/proyecto-cloud/static-website
+Realiza el despliegue en Kubernetes usando los manifiestos creados:
 
-(Si lo hacía desde git bash, no funcionaba porque instalé minikube desde el cmd).
+* Inicia Minikube
+* Solicita montar el contenido estático como volumen
+* Aplica namespace, volumen, deployment y service
+* Verifica el pod
+* Abre el sitio web en el navegador
 
-Sino para Linux:
+📌 **Ejecutar luego de inicializar el proyecto:**
 
-💻 minikube mount ~/proyecto-cloud/static-website:/proyecto-cloud/static-website
+```bash
+chmod +x desplegar.sh
+./desplegar.sh
+```
 
-❗Esta ventana debe quedar abierta!
+---
 
-En otro cmd o terminal, aplicar el manifiesto creado anteriormente con:
+### 3. `limpiar.sh`
 
-💻 kubectl apply -f k8s/volumes/pagina-volumen_persistente.yaml
+Limpia todos los recursos creados:
 
-Aquí verificar que el pvc y el pv estén en estado "bound" con el comando:
+* Elimina el Deployment, Service, PVC, PV y Namespace
+* Detiene Minikube
 
-💻 kubectl get pvc -n static-website
+📌 **Ejecutar cuando desees eliminar el entorno:**
 
-4. **Crear el manifiesto deployment y service**
+```bash
+chmod +x limpiar.sh
+./limpiar.sh
+```
 
-Dentro del directorio k8s creé los directorios "deployments" y "services", en los cuales, dentro de cada uno, creé los manifiestos correspondientes, llamados pagina-deployment.yaml y pagina-service.yaml respectivamente.
-El servicio se llama pagina-web-service.
+---
 
-#### Desplegar el contenedor NGINX
-
-💻 kubectl apply -f k8s/deployments/pagina-deployment.yaml
-
-#### Exponer el servicio por NodePort
-
-💻 kubectl apply -f k8s/services/pagina-service.yaml
-
-5. **Acceder al sitio web**
-
-Antes verificar el estado del pod:
-
-💻 kubectl get pods -n static-website
-
-Debe estar READY: 1/1 y STATUS: Running 
-
-💻 minikube service pagina-web-service -n static-website
-
-Se abrirá la página web estática en el navegador.
-Sino, escribí en el navegador:
-http://localhost:30080
-
-## 📂 Archivos Clave
-
-* pagina-volumen_persistente.yaml: definde un volumen persistente con hostPath y su claim.
-* pagina-deployment.yaml: despliega un pod con imagen nginx:alpine y monta el volumen.
-* pagina-service.yaml: expone el pod mediante NodePort.
-
-## 🧽 Limpieza
-
-Para eliminar los recursos creados:
-
-💻 kubectl delete deployment pagina-web -n static-website
-
-💻 kubectl delete service pagina-web-service -n static-website
-
-💻 kubectl delete pvc pagina-pvc -n static-website
-
-💻 kubectl delete pv pagina-pv
-
-💻 minikube stop
-
-## 💬 Notas
-
-Asegurarse de que la ruta del hostPath del volumetn exista en el nodo antes de aplicar el manifiesto.
-El archivo html debe estar dentro de /proyecto-cloud/static-website antes de iniciar el despliegue.
 
 ## ✍️ Autor
 
-Lilia Andrea García Hiramatsu
-
-Mini proyecto para la asignatura Computación en la Nube.
+- Lilia Andrea García Hiramatsu
+- Computación en la Nube - Desarrollo de Software
+- Año: 2025
