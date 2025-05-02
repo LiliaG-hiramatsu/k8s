@@ -84,7 +84,20 @@ crear_recursos_k8s() {
 }
 
 verificar_pod() {
-	echo "Verificando el estado del pod..."
+	echo "Esperando a que el pod este en estado 'Running'..."
+
+	while true; do
+		estado=$(kubectl get pods -n "$NAMESPACE" --no-headers | awk '{print $3}')
+		if [[ "$estado" == "Running" ]]; then
+			echo "El pod esta corriendo correctamente."
+			break
+		fi
+		echo "Aun no esta listo... esperando 3 segundos"
+		sleep 3
+	done
+
+	echo
+	echo "Estado del pod:"
 	kubectl get pods -n "$NAMESPACE"
 }
 

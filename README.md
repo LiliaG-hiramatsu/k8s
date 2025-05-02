@@ -52,7 +52,7 @@ Realiza el despliegue en Kubernetes usando los manifiestos creados:
 * Inicia Minikube
 * Solicita montar el contenido estático como volumen
 * Aplica namespace, volumen, deployment y service
-* Verifica el pod
+* Verifica el estado del pod
 * Abre el sitio web en el navegador
 
 📌 **Ejecutar luego de inicializar el proyecto:**
