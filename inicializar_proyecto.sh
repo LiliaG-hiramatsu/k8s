@@ -99,9 +99,16 @@ EOF
 }
 
 crear_repo_k8s_y_subirlo() {
-	echo "Creando repositorio $REPO_K8S en github..."
-	gh repo create "$USUARIO_GITHUB/$REPO_K8S" --public --source="$DIR_K8S" --remote=origin --push
+    echo "Inicializando repositorio local de k8s..."
+    cd "$DIR_K8S"
+    git init
+    git add .
+    git commit -m "Primer commit de manifiestos Kubernetes y scripts"
+
+    echo "Creando repositorio $REPO_K8S en GitHub..."
+    gh repo create "$USUARIO_GITHUB/$REPO_K8S" --public --source="." --remote=origin --push
 }
+
 
 # ---- EJECUCION ----
 
