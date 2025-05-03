@@ -58,6 +58,10 @@ Realiza el despliegue en Kubernetes usando los manifiestos creados:
 
 ### 3. `limpiar.sh`
 
+Ejecutamos el tercer script:
+
+`./limpiar.sh`
+
 Limpia todos los recursos creados:
 
 * Elimina el Deployment, Service y Namespace
